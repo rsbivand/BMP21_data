@@ -1,0 +1,1184 @@
+
+> sink(zz, type = "message")
+
+> ###################################################
+> ### code chunk number 14: BMP_submission_0.Rnw:265-267
+> ##################################### .... [TRUNCATED] 
+Linking to GEOS 3.9.1, GDAL 3.2.2, PROJ 8.0.0
+
+> used.cars <- st_read("Data and Shapes/hanna66.gpkg", quiet=TRUE)
+
+> ###################################################
+> ### code chunk number 15: BMP_submission_0.Rnw:271-275
+> ##################################### .... [TRUNCATED] 
+Loading required package: sp
+Loading required package: spData
+
+Attaching package: 'spData'
+
+The following object is masked _by_ '.GlobalEnv':
+
+    used.cars
+
+
+> nb <- poly2nb(used.cars)
+
+> centroids <- st_centroid(st_geometry(used.cars))
+
+> nbl <- nb2lines(nb, coords=centroids, as_sf=TRUE)
+
+> ###################################################
+> ### code chunk number 16: BMP_submission_0.Rnw:279-290
+> ##################################### .... [TRUNCATED] 
+
+> nbl_laea <- st_transform(nbl, "EPSG:2163")
+
+> library(tmap)
+
+> a <- tm_shape(used.cars_laea) + tm_fill("av55_59", title=c("1960 USD"), n=8, palette="Reds") + 
++   tm_borders(lwd=0.5) + tm_legend(position=c("RIGH ..." ... [TRUNCATED] 
+
+> b <- tm_shape(used.cars_laea) + tm_fill(c("transp", "salesTax"), title=c("1960 USD"), n=8, palette="YlOrBr") + 
++   tm_legend(position=c("right", "b ..." ... [TRUNCATED] 
+
+> tmap_arrange(a, b, nrow=2)
+
+> ###################################################
+> ### code chunk number 18: BMP_submission_0.Rnw:314-316
+> ##################################### .... [TRUNCATED] 
+Neighbour list object:
+Number of regions: 49 
+Number of nonzero links: 218 
+Percentage nonzero weights: 9.07955 
+Average number of links: 4.44898 
+
+> lw <- nb2listw(nb, style="W")
+
+> ###################################################
+> ### code chunk number 19: BMP_submission_0.Rnw:329-333
+> ##################################### .... [TRUNCATED] 
+
+> transp_APLE <- aple(c(scale(used.cars$transp, scale=FALSE)), lw)
+
+> salesTax_APLE <- aple(c(scale(used.cars$salesTax, scale=FALSE)), lw)
+
+> both_APLE <- aple(c(scale(with(used.cars, transp + salesTax), scale=FALSE)), lw)
+
+> ###################################################
+> ### code chunk number 20: data cross section dui
+> ########################################### .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 21: BMP_submission_0.Rnw:382-383
+> ##################################### .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 22: BMP_submission_0.Rnw:385-386 (eval = FALSE)
+> ###################### .... [TRUNCATED] 
+
+> fm2 <- dui ~ nondui + vehicles + dry
+
+> endog2 <- ~ police
+
+> instruments2 <- ~ elect 
+
+> ###################################################
+> ### code chunk number 24: ricedata
+> ###################################################
+> dat .... [TRUNCATED] 
+
+> data(riceww, package="splm")
+
+> ricelw <- mat2listw(riceww)
+
+> ###################################################
+> ### code chunk number 25: ricefm
+> ###################################################
+> ricef .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 26: splm data 4
+> ###################################################
+>  .... [TRUNCATED] 
+
+> data_cor <- read.csv("./Data and Shapes/cornwell.csv")
+
+> shape4 <- st_read("Data and Shapes/north_carol.gpkg", quiet=TRUE)
+
+> coord_NC <- st_centroid(st_geometry(shape4), of_largest_polygon=TRUE)
+
+> nbnc_NC <- knn2nb(knearneigh(coord_NC, k = 5))
+
+> nc_listw <- nb2listw(nbnc_NC, style="W")
+
+> fm4 <- lcrmrte ~ lprbconv + lprbpris + lavgsen + 
++   ldensity + lwcon + lwtuc + 
++   lwtrd + lwfir + lwser + lwmfg + 
++   lwfed+ lwsta + lwloc + lp .... [TRUNCATED] 
+
+> endog4 = ~ lprbarr + lpolpc   
+
+> instruments4 = ~ ltaxpc + lmix
+
+> ###################################################
+> ### code chunk number 27: BMP_submission_0.Rnw:656-661
+> ##################################### .... [TRUNCATED] 
+
+> suppressPackageStartupMessages(library(xtable))
+
+> print(xtable(mat, align=c("l","r","r","r","r"), digits=c(NA, 4, 4, 4, 4), 
++ display=c("s", "f", "f", "f", "f")), floating=FALSE, comment=FALSE, 
++  .... [TRUNCATED] 
+\begin{tabular}{lrrrr}
+  \hline
+ & $\rho_x$ 0 & $\rho_x$ 0.2 & $\rho_x$ 0.5 & $\rho_x$ 0.8 \\ 
+  \hline
+$\rho_y$ 0 & 0.0505 & 0.0504 & 0.0499 & 0.0502 \\ 
+  $\rho_y$ 0.2 & 0.0497 & 0.0561 & 0.0647 & 0.0802 \\ 
+  $\rho_y$ 0.5 & 0.0496 & 0.0647 & 0.1002 & 0.1625 \\ 
+  $\rho_y$ 0.8 & 0.0532 & 0.0848 & 0.1650 & 0.3134 \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 28: BMP_submission_0.Rnw:681-684
+> ##################################### .... [TRUNCATED] 
+
+> lm_obj2 <- lm(av55_59 ~ transp + salesTax, used.cars)
+
+> lm_obj3 <- lm(av55_59 ~ offset(transp) + salesTax, used.cars)
+
+> ###################################################
+> ### code chunk number 29: BMP_submission_0.Rnw:702-715
+> ##################################### .... [TRUNCATED] 
+
+> cmat[1:4, 1] <- formatC(c(t(summary(lm_obj1)$coefficients[,1:2])), format="f", digits=3)
+
+> cmat[c(1:2, 5:8), 2] <- formatC(c(t(summary(lm_obj2)$coefficients[,1:2])), format="f", digits=3)
+
+> cmat[c(1:2, 7:8), 3] <- formatC(c(t(summary(lm_obj3)$coefficients[,1:2])), format="f", digits=3)
+
+> cmat[9,1] <- formatC(summary(lm_obj1)$sigma^2, format="f", digits=3)
+
+> cmat[9,2] <- formatC(summary(lm_obj2)$sigma^2, format="f", digits=3)
+
+> cmat[9,3] <- formatC(summary(lm_obj3)$sigma^2, format="f", digits=3)
+
+> even <- (1:nrow(cmat) %% 2) == 0
+
+> cmat[even,] <- t(apply(cmat[even,], 1, function(x) { sapply(x, function(y) {ifelse(nzchar(y), paste("(", y, ")", sep=""), y)})}))
+
+> rownames(cmat) <- c("(Intercept)", " ", "I(transp + salesTax)", "  ", "transp", "   ", "salesTax", "    ", "$\\sigma^2$")
+
+> colnames(cmat) <- c("(1)", "(2)", "(3)")
+
+> print(xtable(cmat, align=c("l","r","r","r")), floating=FALSE, comment=FALSE, 
++ sanitize.text.function=function(x){x}, hline.after=c(-1,0,9))
+\begin{tabular}{lrrr}
+  \hline
+ & (1) & (2) & (3) \\ 
+  \hline
+(Intercept) & 1435.971 & 1404.473 & 1436.256 \\ 
+    & (27.178) & (23.200) & (11.515) \\ 
+  I(transp + salesTax) & 0.686 &  &  \\ 
+     & (0.173) &  &  \\ 
+  transp &  & 1.297 &  \\ 
+      &  & (0.189) &  \\ 
+  salesTax &  & -0.073 & -0.080 \\ 
+       &  & (0.211) & (0.214) \\ 
+  $\sigma^2$ & 3181.985 & 2139.748 & 2206.494 \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 30: BMP_submission_0.Rnw:733-736
+> ##################################### .... [TRUNCATED] 
+
+> moran2 <- lm.morantest(lm_obj2, lw, alternative="two.sided")
+
+> moran3 <- lm.morantest(lm_obj3, lw, alternative="two.sided")
+
+> ###################################################
+> ### code chunk number 31: BMP_submission_0.Rnw:752-759
+> ##################################### .... [TRUNCATED] 
+
+> cmat <- formatC(mat[1:4,], format="f", digits=4)
+
+> cmat <- rbind(cmat, format.pval(mat[5,]))
+
+> rownames(cmat)[5] <- "Pr(z != 0)"
+
+> colnames(cmat) <- paste("(", 1:3, ")", sep="")
+
+> print(xtable(cmat, align=c("l","r","r","r")), floating=FALSE, comment=FALSE, 
++ sanitize.text.function=function(x){x}, hline.after=c(-1,0,5))
+\begin{tabular}{lrrr}
+  \hline
+ & (1) & (2) & (3) \\ 
+  \hline
+Observed Moran I & 0.5738 & 0.5385 & 0.5917 \\ 
+  Expectation & -0.0297 & -0.0361 & -0.0175 \\ 
+  Variance & 0.0089 & 0.0090 & 0.0094 \\ 
+  Standard deviate & 6.4071 & 6.0731 & 6.2897 \\ 
+  Pr(z != 0) & 1.4830e-10 & 1.2543e-09 & 3.1804e-10 \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 32: BMP_submission_0.Rnw:775-778
+> ##################################### .... [TRUNCATED] 
+
+> LM2 <- lm.LMtests(lm_obj2, lw, test="all")
+
+> LM3 <- lm.LMtests(lm_obj3, lw, test="all")
+
+> ###################################################
+> ### code chunk number 33: BMP_submission_0.Rnw:787-792
+> ##################################### .... [TRUNCATED] 
+
+> cmat <- t(apply(mat, 1, format.pval))
+
+> colnames(cmat) <- paste("(", 1:3, ")", sep="")
+
+> print(xtable(cmat, align=c("l","r","r","r")), floating=FALSE, comment=FALSE, 
++ sanitize.text.function=function(x){x}, hline.after=c(-1,0,5))
+\begin{tabular}{lrrr}
+  \hline
+ & (1) & (2) & (3) \\ 
+  \hline
+LMerr & 1.4160e-08 & 1.0208e-07 & 4.9702e-09 \\ 
+  LMlag & 1.5194e-10 & 6.4062e-09 & 8.8371e-09 \\ 
+  RLMerr & 0.839688 & 0.615013 & 0.015588 \\ 
+  RLMlag & 0.0028841 & 0.0176952 & 0.0296537 \\ 
+  SARMA & 1.2226e-09 & 4.2232e-08 & 3.5187e-09 \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 34: BMP_submission_0.Rnw:902-904
+> ##################################### .... [TRUNCATED] 
+Loading required package: Matrix
+
+Attaching package: 'spatialreg'
+
+The following objects are masked from 'package:spdep':
+
+    as_dgRMatrix_listw, as_dsCMatrix_I, as_dsCMatrix_IrW,
+    as_dsTMatrix_listw, as.spam.listw, can.be.simmed, cheb_setup,
+    create_WX, do_ldet, eigen_pre_setup, eigen_setup, eigenw,
+    errorsarlm, get.ClusterOption, get.coresOption, get.mcOption,
+    get.VerboseOption, get.ZeroPolicyOption, GMargminImage, GMerrorsar,
+    griffith_sone, gstsls, Hausman.test, impacts, intImpacts,
+    Jacobian_W, jacobianSetup, l_max, lagmess, lagsarlm, lextrB,
+    lextrS, lextrW, lmSLX, LU_prepermutate_setup, LU_setup,
+    Matrix_J_setup, Matrix_setup, mcdet_setup, MCMCsamp, ME, mom_calc,
+    mom_calc_int2, moments_setup, powerWeights, sacsarlm,
+    SE_classic_setup, SE_interp_setup, SE_whichMin_setup,
+    set.ClusterOption, set.coresOption, set.mcOption,
+    set.VerboseOption, set.ZeroPolicyOption, similar.listw, spam_setup,
+    spam_update_setup, SpatialFiltering, spautolm, spBreg_err,
+    spBreg_lag, spBreg_sac, stsls, subgraph_eigenw, trW
+
+
+> sem_obj2 <- spatialreg::errorsarlm(av55_59 ~ transp + salesTax, used.cars, listw=lw)
+
+> ###################################################
+> ### code chunk number 35: BMP_submission_0.Rnw:917-919
+> ##################################### .... [TRUNCATED] 
+
+> sdm_obj2 <- spatialreg::lagsarlm(av55_59 ~ transp + salesTax, used.cars, listw=lw, Durbin=TRUE)
+
+> ###################################################
+> ### code chunk number 36: BMP_submission_0.Rnw:929-950
+> ##################################### .... [TRUNCATED] 
+
+> cmat[1:6, 1] <- formatC(c(t(summary(lm_obj2)$coefficients[,1:2])), format="f", digits=3)
+
+> cmat[1:6, 2] <- formatC(c(t(summary(sem_obj2)$Coef[,1:2])), format="f", digits=3)
+
+> cmat[1:6, 3] <- formatC(c(t(summary(slm_obj2)$Coef[,1:2])), format="f", digits=3)
+
+> cmat[1:10, 4] <- formatC(c(t(summary(sdm_obj2)$Coef[,1:2])), format="f", digits=3)
+
+> cmat[15, 1] <- formatC(summary(lm_obj2)$sigma^2, format="f", digits=3)
+
+> cmat[15, 2] <- formatC(summary(sem_obj2)$s2, format="f", digits=3)
+
+> cmat[15, 3] <- formatC(summary(slm_obj2)$s2, format="f", digits=3)
+
+> cmat[15, 4] <- formatC(summary(sdm_obj2)$s2, format="f", digits=3)
+
+> cmat[11, 2] <- formatC(summary(sem_obj2)$lambda, format="f", digits=3)
+
+> cmat[12, 2] <- formatC(summary(sem_obj2)$lambda.se, format="f", digits=3)
+
+> cmat[13, 3] <- formatC(summary(slm_obj2)$rho, format="f", digits=3)
+
+> cmat[14, 3] <- formatC(summary(slm_obj2)$rho.se, format="f", digits=3)
+
+> cmat[13, 4] <- formatC(summary(sdm_obj2)$rho, format="f", digits=3)
+
+> cmat[14, 4] <- formatC(summary(sdm_obj2)$rho.se, format="f", digits=3)
+
+> even <- (1:nrow(cmat) %% 2) == 0
+
+> cmat[even,] <- t(apply(cmat[even,], 1, function(x) { sapply(x, function(y) {ifelse(nzchar(y), paste("(", y, ")", sep=""), y)})}))
+
+> rownames(cmat) <- c("(Intercept)", " ", "transp", "  ", "salesTax", "   ", "lag(transp)", "    ", "lag(salesTax)", "     ", "$\\rhoerr$", "      ",  .... [TRUNCATED] 
+
+> colnames(cmat) <- c("OLS", "SEM", "SLM", "SDM")
+
+> print(xtable(cmat, align=c("l","r","r","r","r")), floating=FALSE, comment=FALSE, 
++ sanitize.text.function=function(x){x}, hline.after=c(-1,0,15))
+\begin{tabular}{lrrrr}
+  \hline
+ & OLS & SEM & SLM & SDM \\ 
+  \hline
+(Intercept) & 1404.473 & 1445.411 & 441.828 & 516.990 \\ 
+    & (23.200) & (36.934) & (150.080) & (166.969) \\ 
+  transp & 1.297 & 0.873 & 0.466 & 0.230 \\ 
+     & (0.189) & (0.299) & (0.168) & (0.454) \\ 
+  salesTax & -0.073 & 0.043 & -0.053 & -0.161 \\ 
+      & (0.211) & (0.122) & (0.143) & (0.156) \\ 
+  lag(transp) &  &  &  & 0.317 \\ 
+       &  &  &  & (0.536) \\ 
+  lag(salesTax) &  &  &  & -0.474 \\ 
+        &  &  &  & (0.301) \\ 
+  $\rhoerr$ &  & 0.721 &  &  \\ 
+         &  & (0.100) &  &  \\ 
+  $\rholag$ &  &  & 0.683 & 0.645 \\ 
+          &  &  & (0.105) & (0.115) \\ 
+  $\sigma^2$ & 2139.748 & 999.691 & 974.969 & 942.052 \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 37: lag model spatialreg
+> ############################################# .... [TRUNCATED] 
+
+> err_gmm_sreg <- spatialreg::GMerrorsar(dui ~ nondui + vehicles 
++                                        + dry + police, data = shape2, 
++           .... [TRUNCATED] 
+
+> sarar_gmm_sreg <- spatialreg::gstsls(dui ~ nondui + vehicles 
++                                      + dry + police, 
++                              .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 38: BMP_submission_0.Rnw:1038-1052
+> ################################### .... [TRUNCATED] 
+
+> cmat[1:10, 2] <- formatC(c(t(summary(lag_gmm_sreg)$Coef[-1,1:2])), format="f", digits=3)
+
+> cmat[13:14, 2] <- formatC(c(t(summary(lag_gmm_sreg)$Coef[1,1:2])), format="f", digits=3)
+
+> cmat[1:10, 1] <- formatC(c(t(summary(err_gmm_sreg)$Coef[,1:2])), format="f", digits=3)
+
+> cmat[11:12, 1] <- formatC(c(t(c(summary(err_gmm_sreg)$lambda, as.numeric(summary(err_gmm_sreg)$lambda.se)))), format="f", digits=3)
+
+> cmat[1:10, 3] <- formatC(c(t(summary(sarar_gmm_sreg)$Coef[-1,1:2])), format="f", digits=3)
+
+> cmat[13:14, 3] <- formatC(c(t(summary(sarar_gmm_sreg)$Coef[1,1:2])), format="f", digits=3)
+
+> cmat[11, 3] <- formatC(c(summary(sarar_gmm_sreg)$lambda), format="f", digits=3)
+
+> even <- (1:nrow(cmat) %% 2) == 0
+
+> cmat[even,] <- t(apply(cmat[even,], 1, function(x) { sapply(x, function(y) {ifelse(nzchar(y), paste("(", y, ")", sep=""), y)})}))
+
+> rownames(cmat) <- c("(Intercept)", " ", "nondui", "  ", "vehicles", "   ", "dry", "    ", "police", "     ", "$\\rhoerr$", "      ", "$\\rholag$", " ..." ... [TRUNCATED] 
+
+> colnames(cmat) <- c("SEM", "SLM", "SARAR")
+
+> print(xtable(cmat, align=c("l","r","r","r")), floating=FALSE, comment=FALSE, 
++ sanitize.text.function=function(x){x}, hline.after=c(-1,0,14))
+\begin{tabular}{lrrr}
+  \hline
+ & SEM & SLM & SARAR \\ 
+  \hline
+(Intercept) & -5.432 & -6.410 & -6.410 \\ 
+    & (0.229) & (0.418) & (0.418) \\ 
+  nondui & 0.000 & 0.000 & 0.000 \\ 
+     & (0.001) & (0.001) & (0.001) \\ 
+  vehicles & 0.016 & 0.016 & 0.016 \\ 
+      & (0.001) & (0.001) & (0.001) \\ 
+  dry & 0.104 & 0.106 & 0.106 \\ 
+       & (0.035) & (0.035) & (0.035) \\ 
+  police & 0.600 & 0.598 & 0.598 \\ 
+        & (0.015) & (0.015) & (0.015) \\ 
+  $\rhoerr$ & 0.051 &  & 0.001 \\ 
+         & (0.080) &  &  \\ 
+  $\rholag$ &  & 0.047 & 0.047 \\ 
+          &  & (0.017) & (0.017) \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 39: sarar model sphet
+> ################################################ .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 40: BMP_submission_0.Rnw:1097-1105
+> ################################### .... [TRUNCATED] 
+
+> cmat[1:14, 1] <- formatC(c(t(summary(het_old)$Coef[,1:2])), format="f", digits=3)
+
+> even <- (1:nrow(cmat) %% 2) == 0
+
+> cmat[even,] <-  apply(as.matrix(cmat[even,]),1, function(y) {ifelse(nzchar(y), paste("(", y, ")", sep=""), y)})
+
+> rownames(cmat) <- c("(Intercept)", " ", "nondui", "  ", "vehicles", "   ", "dry", "    ", "police", "     ", "$\\rholag$", "      ", "$\\rhoerr$", " ..." ... [TRUNCATED] 
+
+> colnames(cmat) <- c("SARAR Het")
+
+> print(xtable(cmat, align=c("l","r")), floating=FALSE, comment=FALSE, 
++ sanitize.text.function=function(x){x}, hline.after=c(-1,0,14))
+\begin{tabular}{lr}
+  \hline
+ & SARAR Het \\ 
+  \hline
+(Intercept) & -6.410 \\ 
+    & (0.446) \\ 
+  nondui & 0.000 \\ 
+     & (0.001) \\ 
+  vehicles & 0.016 \\ 
+      & (0.001) \\ 
+  dry & 0.106 \\ 
+       & (0.034) \\ 
+  police & 0.598 \\ 
+        & (0.018) \\ 
+  $\rholag$ & 0.047 \\ 
+         & (0.018) \\ 
+  $\rhoerr$ & -0.000 \\ 
+          & (0.037) \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 41: hac stslshac
+> ###################################################
+> .... [TRUNCATED] 
+
+> knn_dui <- spdep::knearneigh(crd_dui, k = 10)
+
+> nb_dui <- spdep::knn2nb(knn_dui)
+
+> dst_dui <- spdep::nbdists(nb_dui, crd_dui)
+
+> k10lw <- spdep::nb2listw(nb_dui, glist = dst_dui, style="B")
+
+> class(k10lw) <- "distance"
+
+> hac_old <- sphet::stslshac(dui ~ nondui + vehicles + dry 
++                             + police,  data = shape2, 
++                             lis .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 42: BMP_submission_0.Rnw:1156-1167
+> ################################### .... [TRUNCATED] 
+
+> seq1 <- seq(1,18,3)
+
+> seq2 <- seq(2,18,3)
+
+> seq3 <- seq(3,18,3)
+
+> cmat[seq1, 1] <- formatC(c(t(summary(lag_gmm_sreg)$Coef[-1,1]), t(summary(lag_gmm_sreg)$Coef[1,1])), format="f", digits=3)
+
+> cmat[seq2, 1] <- formatC(c(t(summary(lag_gmm_sreg)$Coef[-1,2]), t(summary(lag_gmm_sreg)$Coef[1,2])), format="f", digits=3)
+
+> cmat[seq3, 1] <- formatC(c(t(summary(hac_old)$Coef[-1,2]), t(summary(hac_old)$Coef[1,2])), format="f", digits=3)
+
+> cmat[sort(c(seq2, seq3)),] <-  apply(as.matrix(cmat[sort(c(seq2,seq3)),]),1, function(y) {ifelse(nzchar(y), paste("(", y, ")", sep=""), y)})
+
+> row.names(cmat) <- c("(Intercept)", "", " ", "nondui", "  ", "   ", "vehicles", "    ", "     ", "dry", "       ","        ", "police", "         ", .... [TRUNCATED] 
+
+> colnames(cmat) <- c("LAG  HAC")
+
+> print(xtable(cmat, align=c("l","r")), floating=FALSE, comment=FALSE,sanitize.text.function=function(x){x}, hline.after=c(-1,0,18))
+\begin{tabular}{lr}
+  \hline
+ & LAG  HAC \\ 
+  \hline
+(Intercept) & -6.410 \\ 
+   & (0.418) \\ 
+    & (0.466) \\ 
+  nondui & 0.000 \\ 
+     & (0.001) \\ 
+      & (0.001) \\ 
+  vehicles & 0.016 \\ 
+       & (0.001) \\ 
+        & (0.001) \\ 
+  dry & 0.106 \\ 
+          & (0.035) \\ 
+           & (0.034) \\ 
+  police & 0.598 \\ 
+            & (0.015) \\ 
+             & (0.020) \\ 
+  $\rholag$ & 0.047 \\ 
+               & (0.017) \\ 
+                 & (0.019) \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 43: BMP_submission_0.Rnw:1210-1268 (eval = FALSE)
+> #################### .... [TRUNCATED] 
+
+> print(xtable(cmat, align=c("l","r","r","r","r","r")), floating=FALSE, comment=FALSE, 
++ sanitize.text.function=function(x){x}, hline.after=c(-1,0,8, .... [TRUNCATED] 
+\begin{tabular}{lrrrrr}
+  \hline
+ & GMM & eigen & Cholesky & MCMC & INLA \\ 
+  \hline
+$\rhoerr$ & 0.0509 & 0.0459 & 0.0459 & 0.0464 & 0.0461 \\ 
+  (Intercept) & -5.4319 & -5.4329 & -5.4329 & -5.4344 & -5.4331 \\ 
+  nondui & 0.0003 & 0.0003 & 0.0003 & 0.0003 & 0.0003 \\ 
+  vehicles & 0.0156 & 0.0156 & 0.0156 & 0.0156 & 0.0156 \\ 
+  dry & 0.1037 & 0.1039 & 0.1039 & 0.1049 & 0.1039 \\ 
+  police & 0.5999 & 0.5998 & 0.5998 & 0.5995 & 0.5998 \\ 
+  $\rhoerr$ s.e. & 0.0805 & 0.0299 &   NaN & 0.0302 & 0.0299 \\ 
+  LR test &  & 0.1287 & 0.1287 &  &  \\ 
+   \hline
+Set up &  & 11.8420s & 0.0390s & 4.3530s & 0.6579s \\ 
+  Fitting &  & 0.0170s & 0.0820s &  & 25.1193s \\ 
+  Sampling &  &  &  & 2.9090s &  \\ 
+  Completion &  & 92.8660s & 0.1140s & 0.0000s & 0.6290s \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 47: BMP_submission_0.Rnw:1433-1439
+> ################################### .... [TRUNCATED] 
+
+> transp1 <- used.cars
+
+> transp1$transp <- transp1$transp + 1
+
+> p1 <- predict(lm_obj2, newdata=transp1)
+
+> mean(p1-p0)
+[1] 1.297165
+
+> coefficients(lm_obj2)["transp"]
+  transp 
+1.297165 
+
+> ###################################################
+> ### code chunk number 48: BMP_submission_0.Rnw:1446-1450
+> ################################### .... [TRUNCATED] 
+
+> p1_slm <- predict(slm_obj2, newdata=transp1, listw=lw)
+
+> mean(p1_slm-p0_slm)
+[1] 1.468775
+
+> coefficients(slm_obj2)["transp"]
+   transp 
+0.4660211 
+
+> ###################################################
+> ### code chunk number 49: BMP_submission_0.Rnw:1464-1468
+> ################################### .... [TRUNCATED] 
+
+> n <- nrow(used.cars)
+
+> S_transp <- invIrW %*% (diag(n) * coef(slm_obj2)["transp"])
+
+> sum(c(S_transp))/n
+[1] 1.468775
+
+> ###################################################
+> ### code chunk number 50: BMP_submission_0.Rnw:1477-1479
+> ################################### .... [TRUNCATED] 
+[1] 0.5527551
+
+> impacts(slm_obj2, listw=lw)
+Impact measures (lag, exact):
+              Direct   Indirect      Total
+transp    0.55275511  0.9160198  1.4687749
+salesTax -0.06233369 -0.1032987 -0.1656324
+
+> ###################################################
+> ### code chunk number 51: BMP_submission_0.Rnw:1486-1487
+> ################################### .... [TRUNCATED] 
+Impact measures (lag, evalues):
+              Direct   Indirect      Total
+transp    0.55275511  0.9160198  1.4687749
+salesTax -0.06233369 -0.1032987 -0.1656324
+
+> ###################################################
+> ### code chunk number 52: BMP_submission_0.Rnw:1496-1498
+> ################################### .... [TRUNCATED] 
+Impact measures (lag, trace):
+              Direct   Indirect      Total
+transp    0.55275463  0.9160046  1.4687592
+salesTax -0.06233364 -0.1032970 -0.1656307
+
+> impacts(slm_obj2, tr=trW(as(lw, "CsparseMatrix"), m=100, type="mult"))
+Impact measures (lag, trace):
+              Direct   Indirect      Total
+transp    0.55275511  0.9160198  1.4687749
+salesTax -0.06233369 -0.1032987 -0.1656324
+
+> ###################################################
+> ### code chunk number 53: lag model sphet
+> ################################################## .... [TRUNCATED] 
+
+> err_gmm_sphet_e <- sphet::spreg(formula = fm2, data = shape2, 
++                                  listw = listw_dui, endog = endog2, 
++              .... [TRUNCATED] 
+
+> lag_gmm_sphet <- sphet::spreg(formula = dui ~ nondui + vehicles + dry
++                                 + police, data = shape2, 
++                  .... [TRUNCATED] 
+
+> lag_gmm_sphet_e <- sphet::spreg(formula = fm2, data = shape2, 
++                                  listw = listw_dui, endog = endog2, 
++              .... [TRUNCATED] 
+
+> sarar_gmm_sphet <- sphet::spreg(formula = dui ~ nondui + vehicles + dry
++                                 + police, data = shape2, 
++                .... [TRUNCATED] 
+
+> sarar_gmm_sphet_e <- sphet::spreg(formula = fm2, data = shape2, 
++                                  listw = listw_dui, endog = endog2, 
++            .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 54: BMP_submission_0.Rnw:1552-1571
+> ################################### .... [TRUNCATED] 
+
+> cmat[1:12, 1] <- formatC(c(t(as.matrix(summary(err_gmm_sphet)$Coef[,1:2]))), format="f", digits=3)
+
+> cmat[1:12, 2] <- formatC(c(t(as.matrix(summary(err_gmm_sphet_e)$Coef[,1:2]))), format="f", digits=3)
+
+> cmat[1:10, 3] <- formatC(c(t(as.matrix(summary(lag_gmm_sphet)$Coef[-6,1:2]))), format="f", digits=3)
+
+> cmat[13:14, 3] <- formatC(c(t(as.matrix(summary(lag_gmm_sphet)$Coef[6,1:2]))), format="f", digits=3)
+
+> cmat[1:10, 4] <- formatC(c(t(as.matrix(summary(lag_gmm_sphet_e)$Coef[-6,1:2]))), format="f", digits=3)
+
+> cmat[13:14, 4] <- formatC(c(t(as.matrix(summary(lag_gmm_sphet_e)$Coef[6,1:2]))), format="f", digits=3)
+
+> cmat[1:10, 5] <- formatC(c(t(as.matrix(summary(sarar_gmm_sphet)$Coef[-c(6,7),1:2]))), format="f", digits=3)
+
+> cmat[13:14, 5] <- formatC(c(t(as.matrix(summary(sarar_gmm_sphet)$Coef[6,1:2]))), format="f", digits=3)
+
+> cmat[11:12, 5] <- formatC(c(t(as.matrix(summary(sarar_gmm_sphet)$Coef[7,1:2]))), format="f", digits=3)
+
+> cmat[1:10, 6] <- formatC(c(t(as.matrix(summary(sarar_gmm_sphet_e)$Coef[-c(6,7),1:2]))), format="f", digits=3)
+
+> cmat[13:14, 6] <- formatC(c(t(as.matrix(summary(sarar_gmm_sphet_e)$Coef[6,1:2]))), format="f", digits=3)
+
+> cmat[11:12, 6] <- formatC(c(t(as.matrix(summary(sarar_gmm_sphet_e)$Coef[7,1:2]))), format="f", digits=)
+
+> even <- (1:nrow(cmat) %% 2) == 0
+
+> cmat[even,] <- t(apply(cmat[even,], 1, function(x) { sapply(x, function(y) {ifelse(nzchar(y), paste("(", y, ")", sep=""), y)})}))
+
+> rownames(cmat) <- c("(Intercept)", " ", "nondui", "  ", "vehicles", "   ", "dry", "    ", "police", "     ", "$\\rhoerr$", "      ", "$\\rholag$", " ..." ... [TRUNCATED] 
+
+> colnames(cmat) <- c("SEM","SEM-end", "SLM", "SLM-end", "SARAR", "SARAR-end")
+
+> print(xtable(cmat, align=c("l","r","r","r","r", "r", "r")), floating=FALSE, comment=FALSE, 
++ sanitize.text.function=function(x){x}, hline.after=c(- .... [TRUNCATED] 
+\begin{tabular}{lrrrrrr}
+  \hline
+ & SEM & SEM-end & SLM & SLM-end & SARAR & SARAR-end \\ 
+  \hline
+(Intercept) & -5.432 & 15.782 & -6.410 & 11.850 & -6.410 & 11.920 \\ 
+    & (0.229) & (1.606) & (0.418) & (1.724) & (0.416) & (1.696) \\ 
+  nondui & 0.000 & -0.000 & 0.000 & -0.000 & 0.000 & -0.000 \\ 
+     & (0.001) & (0.003) & (0.001) & (0.003) & (0.001) & (0.003) \\ 
+  vehicles & 0.016 & 0.094 & 0.016 & 0.094 & 0.016 & 0.094 \\ 
+      & (0.001) & (0.006) & (0.001) & (0.006) & (0.001) & (0.006) \\ 
+  dry & 0.104 & 0.400 & 0.106 & 0.400 & 0.106 & 0.401 \\ 
+       & (0.035) & (0.092) & (0.035) & (0.092) & (0.035) & (0.092) \\ 
+  police & 0.600 & -1.365 & 0.598 & -1.366 & 0.598 & -1.367 \\ 
+        & (0.015) & (0.144) & (0.015) & (0.143) & (0.015) & (0.142) \\ 
+  $\rhoerr$ & 0.047 & -0.005 &  &  & -0.006 & -0.0819 \\ 
+         & (0.030) & (0.025) &  &  & (0.035) & (0.0304) \\ 
+  $\rholag$ &  &  & 0.047 & 0.188 & 0.047 & 0.186 \\ 
+          &  &  & (0.017) & (0.047) & (0.017) & (0.046) \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 55: sem
+> ###################################################
+> library( .... [TRUNCATED] 
+
+> sem <- spml(ricefm, data = RiceFarms, listw = ricelw,
++               model="pooling", lag = FALSE, spatial.error = "b")
+
+> ###################################################
+> ### code chunk number 56: bsktests
+> ###################################################
+> LMH .... [TRUNCATED] 
+
+> LM1 <- bsktest(ricefm, data = RiceFarms, listw = ricelw, test="LM1")
+
+> LM2 <- bsktest(ricefm, data = RiceFarms, listw = ricelw, test="LM2")
+
+> CLMm <- bsktest(ricefm, data = RiceFarms, listw = ricelw, test="CLMmu")
+
+> CLMl <- bsktest(ricefm, data = RiceFarms, listw = ricelw, test="CLMlambda")
+
+> LMtab <- cbind(c(LMH$statistic, LMH$p.value),
++                c(LM1$statistic, LM1$p.value),
++                c(LM2$statistic, LM2$p.value),
++      .... [TRUNCATED] 
+
+> dimnames(LMtab) <- list(c("test", "p-value"), c("LM joint", "LM mu", "LM lambda", "CLM mu", "CLM lambda"))
+
+> round(LMtab, 5)
+        LM joint   LM mu LM lambda  CLM mu CLM lambda
+test      1034.1 4.11991  31.89241 7.99082   35.10134
+p-value      0.0 0.00004   0.00000 0.00000    0.00000
+
+> ###################################################
+> ### code chunk number 57: localCD
+> ###################################################
+> libr .... [TRUNCATED] 
+
+> CDp.pool <- pcdtest(plm(ricefm, data = RiceFarms, model='pooling'),
++                w = listw2mat(ricelw), test='cd')
+
+> CDp.FE <- pcdtest(plm(ricefm, data = RiceFarms, model='within'),
++                w = listw2mat(ricelw), test='cd')
+
+> CDp.RE <- pcdtest(plm(ricefm, data = RiceFarms, model='random'),
++                w = listw2mat(ricelw), test='cd')
+
+> CDtab <- cbind(c(CDp.pool$statistic, CDp.pool$p.value),
++                c(CDp.FE$statistic, CDp.FE$p.value),
++                c(CDp.RE$statistic, C .... [TRUNCATED] 
+
+> dimnames(CDtab) <- list(c("test", "p-value"), c("Pooled","Fixed","Random"))
+
+> round(CDtab, 5)
+          Pooled    Fixed  Random
+test    31.89157 31.47463 31.8113
+p-value  0.00000  0.00000  0.0000
+
+> ###################################################
+> ### code chunk number 58: sarre
+> ###################################################
+> sarre  .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 59: semfe
+> ###################################################
+> librar .... [TRUNCATED] 
+
+> semfe <- spml(ricefm, data = RiceFarms, listw = ricelw,
++               lag = FALSE, spatial.error = "b")
+
+> ###################################################
+> ### code chunk number 60: saremfe
+> ###################################################
+> sare .... [TRUNCATED] 
+
+> summary(saremfe)$CoefTable[1:2, ]
+        Estimate Std. Error   t-value     Pr(>|t|)
+lambda 0.2134885 0.09556428  2.233978 2.548455e-02
+rho    0.6901826 0.05309268 12.999581 1.230162e-38
+
+> ###################################################
+> ### code chunk number 61: semre
+> ###################################################
+> librar .... [TRUNCATED] 
+
+> semre <- spml(ricefm, data = RiceFarms, listw = ricelw,
++               model="random", lag = FALSE, spatial.error = "b")
+
+> ###################################################
+> ### code chunk number 62: sem2re
+> ###################################################
+> sem2r .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 63: saremre
+> ###################################################
+> sare .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 64: bsjktests
+> ###################################################
+> J  .... [TRUNCATED] 
+
+> C.1 <- bsjktest(ricefm, data = RiceFarms, listw = ricelw, test="C.1")
+
+> C.2 <- bsjktest(ricefm, data = RiceFarms, listw = ricelw, test="C.2")
+
+> C.3 <- bsjktest(ricefm, data = RiceFarms, listw = ricelw, test="C.3")
+
+> LMtab2 <- cbind(c(J$statistic, J$p.value),
++                c(C.1$statistic, C.1$p.value),
++                c(C.2$statistic, C.2$p.value),
++         .... [TRUNCATED] 
+
+> dimnames(LMtab2) <- list(c("test", "p-value"), c("LM joint", "CLM lambda", "CLM psi", "CLM mu"))
+
+> round(LMtab2, 5)
+        LM joint CLM lambda CLM psi   CLM mu
+test    1050.143   1047.052 7.00581 78.21034
+p-value    0.000      0.000 0.00812  0.00000
+
+> ###################################################
+> ### code chunk number 65: saremsrre
+> ###################################################
+> sa .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 66: sarem2srre
+> ###################################################
+> s .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 67: Baltagi2
+> ###################################################
+> ec2 .... [TRUNCATED] 
+
+> sarar_ec <-spgm(fm4, data = data_cor, lag = TRUE, listw = nc_listw, 
++ endog = endog4, instruments = instruments4, spatial.error = TRUE, 
++ model =  .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 68: BMP_submission_0.Rnw:2123-2135
+> ################################### .... [TRUNCATED] 
+
+> cmat <- matrix("", ncol=4, nrow=28)
+
+> cmat[1:27, 1] <- formatC(c(t(summary(ec2sls)$Coef[,1])), format="f", digits=3)
+
+> cmat[1:27, 2] <- paste("(", formatC(c(t(summary(ec2sls)$Coef[,2])), format="f", digits=3), ")", sep="")
+
+> cmat[1:27, 3] <- formatC(c(t(summary(sarar_ec)$Coef[-3, 1])), format="f", digits=3)
+
+> cmat[1:27, 4] <- paste("(", formatC(c(t(summary(sarar_ec)$Coef[-3, 2])), format="f", digits=3), ")", sep="")
+
+> cmat[28, 3] <- formatC(c(t(summary(sarar_ec)$Coef[3,1])), format="f", digits=3)
+
+> cmat[28, 4] <- paste("(", formatC(c(t(summary(sarar_ec)$Coef[3,2])), format="f", digits=3), ")", sep="")
+
+> rownames(cmat) <- c(rownames(summary(ec2sls)$Coef),"$\\rholag$")
+
+> colnames(cmat) <- c("EC2SLS", "(std. err.)", "Spatial EC2SLS", "(std. err.)")
+
+> print(xtable(cmat, align=c("l","r","r","r","r")), floating=FALSE, comment=FALSE, 
++ sanitize.text.function=function(x){x}, hline.after=c(-1,0,28))
+\begin{tabular}{lrrrr}
+  \hline
+ & EC2SLS & (std. err.) & Spatial EC2SLS & (std. err.) \\ 
+  \hline
+lprbarr & -0.413 & (0.097) & -0.340 & (0.059) \\ 
+  lpolpc & 0.435 & (0.090) & 0.354 & (0.050) \\ 
+  (Intercept) & -0.954 & (1.284) & -0.698 & (1.144) \\ 
+  lprbconv & -0.323 & (0.054) & -0.275 & (0.031) \\ 
+  lprbpris & -0.186 & (0.042) & -0.164 & (0.033) \\ 
+  lavgsen & -0.010 & (0.027) & -0.014 & (0.025) \\ 
+  ldensity & 0.429 & (0.055) & 0.446 & (0.049) \\ 
+  lwcon & -0.007 & (0.040) & -0.005 & (0.037) \\ 
+  lwtuc & 0.045 & (0.020) & 0.039 & (0.017) \\ 
+  lwtrd & -0.008 & (0.041) & -0.012 & (0.039) \\ 
+  lwfir & -0.004 & (0.029) & -0.006 & (0.027) \\ 
+  lwser & 0.006 & (0.020) & 0.004 & (0.019) \\ 
+  lwmfg & -0.204 & (0.080) & -0.185 & (0.074) \\ 
+  lwfed & -0.164 & (0.159) & -0.067 & (0.141) \\ 
+  lwsta & -0.054 & (0.106) & -0.041 & (0.097) \\ 
+  lwloc & 0.163 & (0.120) & 0.118 & (0.110) \\ 
+  lpctymle & -0.108 & (0.140) & -0.066 & (0.116) \\ 
+  lpctmin & 0.189 & (0.041) & 0.185 & (0.036) \\ 
+  west & -0.227 & (0.100) & -0.224 & (0.089) \\ 
+  central & -0.194 & (0.060) & -0.210 & (0.056) \\ 
+  urban & -0.225 & (0.116) & -0.179 & (0.100) \\ 
+  d82 & 0.011 & (0.026) & 0.006 & (0.020) \\ 
+  d83 & -0.084 & (0.031) & -0.064 & (0.026) \\ 
+  d84 & -0.103 & (0.037) & -0.077 & (0.032) \\ 
+  d85 & -0.096 & (0.049) & -0.073 & (0.044) \\ 
+  d86 & -0.069 & (0.060) & -0.057 & (0.054) \\ 
+  d87 & -0.031 & (0.071) & -0.034 & (0.064) \\ 
+  $\rholag$ &  &  & 0.268 & (0.069) \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 69: BMP_submission_0.Rnw:2163-2170
+> ################################### .... [TRUNCATED] 
+
+> names(nb) <- as.character(used.cars$State)
+
+> N <- nrow(used.cars)
+
+> library(mgcv)
+Loading required package: nlme
+This is mgcv 1.8-34. For overview type 'help("mgcv-package")'.
+
+> gam_obj2 <- gam(av55_59 ~ transp + salesTax + s(State, bs="mrf", k=N-2, xt=list(nb=nb)), 
++                 data = used.cars)
+
+> printCoefmat(summary(gam_obj2)$p.table)
+               Estimate  Std. Error t value  Pr(>|t|)    
+(Intercept) 1424.593015   31.349097 45.4429 < 2.2e-16 ***
+transp         1.082638    0.280730  3.8565  0.001058 ** 
+salesTax      -0.013184    0.143074 -0.0921  0.927544    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+> ###################################################
+> ### code chunk number 70: BMP_submission_0.Rnw:2182-2187
+> ################################### .... [TRUNCATED] 
+Loading required package: MASS
+Loading required package: hglm.data
+
+hglm: Hierarchical Generalized Linear Models
+Version 2.2-1 (2019-04-04) installed
+Authors: Moudud Alam, Lars Ronnegard, Xia Shen
+Maintainer: Xia Shen <xia.shen@ki.se>
+
+Use citation("hglm") to know how to cite our work.
+
+Discussion: https://r-forge.r-project.org/forum/?group_id=558
+BugReports: https://r-forge.r-project.org/tracker/?group_id=558
+VideoTutorials: http://www.youtube.com/playlist?list=PLn1OmZECD-n15vnYzvJDy5GxjNpVV5Jr8
+
+> hglm_obj2 <- hglm(fixed=av55_59 ~ transp + salesTax, random= ~ 1|State, 
++                   data=used.cars, 
++                   rand.family=SAR(D= .... [TRUNCATED] 
+
+> printCoefmat(summary(hglm_obj2)$FixCoefMat)
+               Estimate  Std. Error t-value  Pr(>|t|)    
+(Intercept) 1437.977652   94.727074 15.1802 < 2.2e-16 ***
+transp         0.969334    0.315983  3.0677  0.004288 ** 
+salesTax      -0.038411    0.139840 -0.2747  0.785277    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+> ###################################################
+> ### code chunk number 71: BMP_submission_0.Rnw:2193-2199
+> ################################### .... [TRUNCATED] 
+
+> sf0$hglm_sar <- unname(summary(hglm_obj2, print.ranef=TRUE)$RandCoefMat)[,1]
+
+> sf0$GAM_mrf_re <- predict(gam_obj2, type="terms", se=TRUE)$fit[,3]
+
+> tm_shape(sf0) + tm_fill(c("hglm_sar", "GAM_mrf_re"), midpoint=c(0), n=8, palette="BrBG", title="1960 USD RE") + tm_facets(free.scales=FALSE) + tm_bo .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 72: BMP_submission_0.Rnw:2258-2262
+> ################################### .... [TRUNCATED] 
+  Step SelEvec      Eval       MinMi     ZMinMi       Pr(ZI)        R2
+0    0       0 0.0000000  0.53854945 6.07314120 1.254321e-09 0.5065515
+1    1       2 0.9076713  0.27063108 3.55731861 3.746596e-04 0.7140799
+2    2       1 0.9680162  0.03553382 1.31173941 1.896081e-01 0.7861660
+3    3       4 0.7721324 -0.03794120 0.72371743 4.692392e-01 0.8055611
+4    4       6 0.6176878 -0.11016441 0.08390477 9.331321e-01 0.8248549
+       gamma
+0    0.00000
+1 -203.45955
+2  119.91270
+3  -62.19928
+4  -62.03656
+
+> SF_obj2 <- lm(av55_59 ~ transp + salesTax + fitted(SF0), data = used.cars)
+
+> summary(SF_obj2)
+
+Call:
+lm(formula = av55_59 ~ transp + salesTax + fitted(SF0), data = used.cars)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-66.49 -22.54   4.02  19.95  52.34 
+
+Coefficients:
+                  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)     1404.47266   14.46494  97.095  < 2e-16 ***
+transp             1.29717    0.11799  10.994 6.14e-14 ***
+salesTax          -0.07302    0.13128  -0.556 0.580987    
+fitted(SF0)vec2 -203.45955   28.84123  -7.054 1.22e-08 ***
+fitted(SF0)vec1  119.91270   28.84123   4.158 0.000155 ***
+fitted(SF0)vec4  -62.19928   28.84123  -2.157 0.036808 *  
+fitted(SF0)vec6  -62.03656   28.84123  -2.151 0.037279 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 28.84 on 42 degrees of freedom
+Multiple R-squared:  0.8249,	Adjusted R-squared:  0.7998 
+F-statistic: 32.97 on 6 and 42 DF,  p-value: 2.268e-14
+
+
+> lm.morantest(SF_obj2, lw)
+
+	Global Moran I for regression residuals
+
+data:  
+model: lm(formula = av55_59 ~ transp + salesTax + fitted(SF0), data =
+used.cars)
+weights: lw
+
+Moran I statistic standard deviate = 0.083905, p-value = 0.4666
+alternative hypothesis: greater
+sample estimates:
+Observed Moran I      Expectation         Variance 
+    -0.110164405     -0.117270378      0.007172552 
+
+
+> ###################################################
+> ### code chunk number 73: BMP_submission_0.Rnw:2268-2275
+> ################################### .... [TRUNCATED] 
+
+> pvecs <- vecs %*% diag(coefficients(SF_obj2)[4:7])
+
+> colnames(pvecs) <- colnames(vecs)
+
+> sf1 <- cbind(used.cars_laea, pvecs)
+
+> tm_shape(sf1) + tm_fill(c("vec2", "vec1", "vec4", "vec6"), n=8, palette="BrBG", midpoint=0, title="1960 USD") + tm_facets(free.scales=FALSE) + tm_bo .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 74: BMP_submission_0.Rnw:2295-2302
+> ################################### .... [TRUNCATED] 
+
+> ME0 <- ME(av55_59 ~ transp + salesTax, data = used.cars, listw=lw, alpha=0.15, nsim=99)
+
+> ME_obj2 <- lm(av55_59 ~ transp + salesTax + fitted(ME0), data = used.cars)
+
+> mvecs <- fitted(ME0) %*% diag(coefficients(ME_obj2)[4:6])
+
+> sem_obj2a <- spautolm(av55_59 ~ transp + salesTax, used.cars, listw=lw)
+
+> W <- as(lw, "CsparseMatrix")
+
+> SAR_ssre <- 2*as.vector((sem_obj2a$lambda * W) %*% sem_obj2a$Y - (sem_obj2a$lambda * W) %*% (sem_obj2a$X %*% sem_obj2a$fit$coefficients))
+
+> ###################################################
+> ### code chunk number 75: BMP_submission_0.Rnw:2316-2322
+> ################################### .... [TRUNCATED] 
+
+> centroids_laea <- st_centroid(st_geometry(used.cars_laea))
+
+> meig <- meigen(st_coordinates(centroids_laea))
+ 10/49 eigen-pairs are extracted
+
+> y <- model.response(model.frame(av55_59 ~ transp + salesTax, used.cars))
+
+> X <- model.matrix( ~ transp + salesTax, used.cars)
+
+> (esf_obj2 <- esf(y, X, meig=meig))
+  6/10 eigenvectors are selected
+Call:
+esf(y = y, x = X, meig = meig)
+
+----Coefficients------------------------------
+                 Estimate         SE     t_value      p_value
+(Intercept)  1.498349e+03 18.2316763 82.18384571 3.146807e-46
+transp       3.832013e-01  0.1600957  2.39357598 2.146609e-02
+salesTax    -4.411189e-03  0.1148358 -0.03841303 9.695495e-01
+
+----Spatial effects (residuals)---------------
+                       Estimate
+SE                   51.3659411
+Moran.I/max(Moran.I)  0.6453173
+
+----Error statistics--------------------------
+                 stat
+resid_SE   23.4927492
+adjR2       0.8671902
+logLik   -219.2338371
+AIC       458.4676741
+BIC       477.3858771
+
+> ###################################################
+> ### code chunk number 76: BMP_submission_0.Rnw:2328-2334
+> ################################### .... [TRUNCATED] 
+
+> colnames(evecs) <- rownames(esf_obj2$r)[1:4]
+
+> sf2 <- cbind(sf1, evecs)
+
+> tm_shape(sf2) + tm_fill(c("sf2", "sf4", "sf1", "sf6"), n=8, palette="BrBG", midpoint=0, title="1960 USD") + tm_facets(free.scales=FALSE) + tm_border .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 77: BMP_submission_0.Rnw:2351-2357
+> ################################### .... [TRUNCATED] 
+
+> colnames(mat) <- rownames(mat) <- c("HGLM", "GAM", "SF", "ESF", "ME", "SAR")
+
+> suppressPackageStartupMessages(library(xtable))
+
+> print(xtable(mat, align=c("l","r","r","r","r","r","r"), digits=c(NA, 4, 4, 4, 4, 4, 4), 
++ display=c("s", "f", "f", "f", "f", "f", "f")), floating=F .... [TRUNCATED] 
+\begin{tabular}{lrrrrrr}
+  \hline
+ & HGLM & GAM & SF & ESF & ME & SAR \\ 
+  \hline
+HGLM & 1.0000 & 0.9593 & 0.9106 & 0.9046 & 0.9588 & 0.9500 \\ 
+  GAM & 0.9593 & 1.0000 & 0.8436 & 0.8833 & 0.8856 & 0.8462 \\ 
+  SF & 0.9106 & 0.8436 & 1.0000 & 0.7088 & 0.9051 & 0.9235 \\ 
+  ESF & 0.9046 & 0.8833 & 0.7088 & 1.0000 & 0.8751 & 0.8336 \\ 
+  ME & 0.9588 & 0.8856 & 0.9051 & 0.8751 & 1.0000 & 0.9410 \\ 
+  SAR & 0.9500 & 0.8462 & 0.9235 & 0.8336 & 0.9410 & 1.0000 \\ 
+   \hline
+\end{tabular}
+
+> sessionInfo()
+R version 4.0.4 (2021-02-15)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Fedora 33 (Workstation Edition)
+
+Matrix products: default
+BLAS:   /home/rsb/topics/R/R404-share/lib64/R/lib/libRblas.so
+LAPACK: /home/rsb/topics/R/R404-share/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+ [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+ [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] spmoran_0.2.1    hglm_2.2-1       hglm.data_1.0-1  MASS_7.3-53.1   
+ [5] mgcv_1.8-34      nlme_3.1-152     plm_2.4-1        spatialreg_1.1-7
+ [9] Matrix_1.3-2     xtable_1.8-4     splm_1.5-2       tmap_3.3-1      
+[13] spdep_1.1-7      spData_0.3.8     sp_1.4-6         sf_0.9-9        
+
+loaded via a namespace (and not attached):
+ [1] doParallel_1.0.16  gmodels_2.18.1     RColorBrewer_1.1-2 sphet_1.10.01     
+ [5] tools_4.0.4        vegan_2.5-7        utf8_1.2.1         R6_2.5.0          
+ [9] KernSmooth_2.23-18 colorspace_2.0-0   DBI_1.1.1          permute_0.9-5     
+[13] raster_3.4-5       tidyselect_1.1.0   leaflet_2.0.4.1    compiler_4.0.4    
+[17] leafem_0.1.3       expm_0.999-6       sandwich_3.0-0     scales_1.1.1      
+[21] lmtest_0.9-38      classInt_0.4-3     mvtnorm_1.1-1      proxy_0.4-25      
+[25] stringr_1.4.0      digest_0.6.27      dbscan_1.1-6       base64enc_0.1-3   
+[29] dichromat_2.0-0    pkgconfig_2.0.3    htmltools_0.5.1.1  maps_3.3.0        
+[33] ibdreg_0.3.1       htmlwidgets_1.5.3  rlang_0.4.10       generics_0.1.0    
+[37] zoo_1.8-9          crosstalk_1.1.1    gtools_3.8.2       dplyr_1.0.5       
+[41] magrittr_2.0.1     Formula_1.2-4      dotCall64_1.0-1    munsell_0.5.0     
+[45] Rcpp_1.0.6         fansi_0.4.2        abind_1.4-5        lifecycle_1.0.0   
+[49] stringi_1.5.3      leafsync_0.1.0     tmaptools_3.1-1    grid_4.0.4        
+[53] parallel_4.0.4     gdata_2.18.0       bdsmatrix_1.3-4    crayon_1.4.1      
+[57] deldir_0.2-10      lattice_0.20-41    stars_0.5-2        splines_4.0.4     
+[61] pillar_1.5.1       boot_1.3-27        codetools_0.2-18   LearnBayes_2.15.1 
+[65] XML_3.99-0.6       glue_1.4.2         foreach_1.5.1      png_0.1-7         
+[69] vctrs_0.3.7        spam_2.6-0         Rdpack_2.1.1       miscTools_0.6-26  
+[73] gtable_0.3.0       purrr_0.3.4        assertthat_0.2.1   ggplot2_3.3.3     
+[77] rbibutils_2.0      lwgeom_0.2-5       e1071_1.7-6        RSpectra_0.16-0   
+[81] coda_0.19-4        class_7.3-18       viridisLite_0.3.0  rARPACK_0.11-0    
+[85] tibble_3.1.0       iterators_1.0.13   cluster_2.1.1      fields_11.6       
+[89] units_0.7-1        maxLik_1.4-8       ellipsis_0.3.1     spDataLarge_0.5.1 
+
+> sf_extSoftVersion()
+          GEOS           GDAL         proj.4 GDAL_with_GEOS     USE_PROJ_H 
+       "3.9.1"        "3.2.2"        "8.0.0"         "true"         "true" 
+
+> sink(type = "message")
+
+> sink()
