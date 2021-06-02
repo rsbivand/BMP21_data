@@ -114,6 +114,29 @@ instruments4 = ~ ltaxpc + lmix
 ###################################################
 ### code chunk number 27: BMP_submission_0.Rnw:656-661
 ###################################################
+# n <- nrow(used.cars)
+# rho <- c(0.0, 0.2, 0.5, 0.8)
+# IrWs <- lapply(rho, function(r) invIrW(lw, r))
+# b_0 <- mu_x <- sig_x <- sig_y <- 1
+# mat <- matrix(NA, length(rho), length(rho))
+# nsims <- 10000
+# res <- integer(nsims)
+# tlim <- qt(0.975, n-2)
+# for (i in seq_along(IrWs)) {
+#   for (j in seq_along(IrWs)) {
+#     set.seed(123456)
+#     for (k in seq_along(res)) {
+#       y <- b_0 + IrWs[[i]] %*% rnorm(n, 0, sig_y)
+#       x <- mu_x + IrWs[[j]] %*% rnorm(n, 0, sig_x)
+#       lm_obj <- summary(lm(y ~ x))
+#       res[k] <- ifelse(abs(lm_obj$coefficients[2,1]/lm_obj$coefficients[2,2]) > tlim, 1L, 0L)
+#     }
+#     mat[i, j] <- sum(res)/nsims
+#   }
+# }
+# rownames(mat) <- paste("$\\rho_y$", rho)
+# colnames(mat) <- paste("$\\rho_x$", rho)
+# saveRDS(mat, file="smith_lee_extract.rds")
 mat <- readRDS("Data and Shapes/smith_lee_extract.rds")
 suppressPackageStartupMessages(library(xtable))
 print(xtable(mat, align=c("l","r","r","r","r"), digits=c(NA, 4, 4, 4, 4), 
